@@ -1,0 +1,82 @@
+openapi: 3.0.3
+info:
+  title: Device Management API
+  version: 1.0.0
+  description: Contract for listing, creating, and finding NetPulse devices.
+
+paths:
+  /devices:
+    get:
+      summary: Get all devices
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+    post:
+      summary: Create a device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCreate'
+      responses:
+        '201':
+          description: Device created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+
+  /devices/{device_id}:
+    get:
+      summary: Get one device
+      parameters:
+        - name: device_id
+          in: path
+          description: Unique device identifier
+          required: true
+          schema:
+            type: integer
+          example: 101
+      responses:
+        '200':
+          description: Device found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '404':
+          description: Device not found
+
+components:
+  schemas:
+    DeviceCreate:
+      type: object
+      description: Fields supplied by the client to create a device.
+      required:
+        - name
+        - status
+      properties:
+        name:
+          type: string
+          example: Edge Router 1
+        status:
+          type: string
+          example: active
+    Device:
+      allOf:
+        - $ref: '#/components/schemas/DeviceCreate'
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              example: 101
+
