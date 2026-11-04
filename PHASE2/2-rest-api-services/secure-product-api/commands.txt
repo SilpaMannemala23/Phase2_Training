@@ -1,6 +1,7 @@
+In any terminal :
 sudo apt install python3-pip
 
-cd to the project folder
+cd to your  project folder
 
 python3 -m venv .venv
 

@@ -70,7 +70,7 @@ demo_user = {
     "username": DEMO_USERNAME,
     "password_hash": password_hash.hash(DEMO_PASSWORD),
 }
-
+# URL from where the client would get the access token
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 def authenticate(username: str, password: str) -> bool:
@@ -96,11 +96,13 @@ async def http_error_handler(request: Request, exc: StarletteHTTPException):
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
+
     credentials_error = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid or missing authentication credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
         username = payload.get("sub")
@@ -128,7 +130,7 @@ def login(form: OAuth2PasswordRequestForm = Depends()):
 # Implemment the home page
 @app.get("/")
 def home():
-    return {"message": "API is running"}
+    return {"message": "API Server is running"}
 
 
 
@@ -149,7 +151,8 @@ def get_product(product_id: int):
 
 # Implement new product creation endpoint
 @app.post("/products", status_code=status.HTTP_201_CREATED,response_model=Product )
-def create_product( request_payload:  ProductCreate):
+# def create_product( request_payload:  ProductCreate):
+def create_product( request_payload:  ProductCreate, current_user: str = Depends(get_current_user)):
     global next_id
     product = Product(id=next_id, **request_payload.model_dump())
     products[next_id] = product
