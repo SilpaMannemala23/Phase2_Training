@@ -15,3 +15,8 @@ export JWT_SECRET="blahblah"
 
 Starting the web server (API server)
 $ uvicorn main:app --port 8000 --reload  
+
+
+#Pytest
+sudo apt install python3-pytest
+pytest -v 
